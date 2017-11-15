@@ -11,19 +11,20 @@ def initmodel(model):
     return model.getgroundstate()
 
 if __name__=='__main__':
-    N = 2
-    core = 4
+    N = 3000
+    core = 28
     isings = list()
-    Nx,Ny = 4,4
+    Nx,Ny = 50,50
     size = (Nx,Ny)
     J = 1.0
-    beta = 0.3
+    beta = 10
 
     for i in range(N):
         ising = Isingmodel(size,J,beta,populations=20)
         isings.append(ising)
 
-    pool = Pool(core)  
+    print('Calculating...')
+    pool = Pool(core)
     groundstates = pool.map(initmodel,isings) 
     pool.close()
     pool.join()
@@ -34,10 +35,11 @@ if __name__=='__main__':
 
     #    groundstate = ising.getgroundstate()
     #    groundstates[i,:] = groundstate.flatten()
-    groundstate = groundstates[0]
-    plt.imshow(groundstate)
-    plt.show()
+    #groundstate = groundstates[0]
+    #plt.imshow(groundstate)
+    #plt.show()
 
+    print('Saving...')
     filename = 'data.h5'
     h5file = h5py.File(filename,'w')
     h5file.create_dataset('groundstates',data=groundstates)

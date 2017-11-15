@@ -1,6 +1,13 @@
 # Classification and Analysis of phase of matter by machine learning
 > My own version of codes
 
+## Features
++ Home-made Ising model calculation with Monte Carlo Simulation
+
+![](./pics/Ising.png)
+
++ Neural Networks (Coming)
+
 ## Requirements
 + Numpy, Matplotlib
 + Keras, Tensorflow(backend)

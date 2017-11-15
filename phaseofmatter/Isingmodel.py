@@ -2,17 +2,18 @@ import numpy as np
 from multiprocessing import Pool
 
 class Isingmodel:
-    def __init__(self,size,J,beta,iterations=1e4,populations=10,verbose=False):
+    def __init__(self,size,J,beta,iterations=1000,populations=10,verbose=False,tolerance=0.1):
         self.size = size
-        self.states = list()
-        for i in range(populations):
-            self.states.append(np.random.choice([-1,1],size=size))
         self.J = J
+
+        self.populations = populations
         self.iterations = int(iterations)
         self.groundenergy = None
         self.groundstate = None
         self.beta = beta
         self.verbose = verbose
+
+        self.tolerance = tolerance
 
     def Hamiltonian(self,state):
         '''
@@ -43,54 +44,55 @@ class Isingmodel:
         '''
         Monte Carlo Simulations to get ground state
         '''
-        iterations = self.iterations
 
-        newstate = state.copy()
-        (Nx,Ny) = state.shape
-
-        for i in range(iterations):
-            energy = self.Hamiltonian(state)
-            x = np.random.randint(Nx)
-            y = np.random.randint(Ny)
-            self.spinflip((x,y),newstate)
-            energynew = self.Hamiltonian(newstate)
-
-            #mu = np.min([np.exp(-self.beta*(energynew-energy)),1])
-            if energynew < energy:
-                self.spinflip((x,y),state)
-            else:
-                if np.random.random() < np.exp(-self.beta*(energynew-energy)):
-                    self.spinflip((x,y),state)
+        for i in range(self.iterations):
+            neighbors = np.roll(state,1,axis=1) + np.roll(state,-1,axis=1) + np.roll(state,1,axis=0) + np.roll(state,-1,axis=0)
             
-            if self.verbose:
-                if (i+1)%(int(iterations/10)) == 0:
-                    print('Monte Carlo calculating...{num}%'.format(num=100*(i+1)/iterations))
+            deltaE = 2*self.J*(state*neighbors)
+            P_flip = np.exp(-deltaE*self.beta)
 
-        energy = self.Hamiltonian(state)
-        return energy
+            transitions = (np.random.random(state.shape) < P_flip)*(np.random.random(state.shape) < self.tolerance)*-2 + 1
+        
+            state = state*transitions
+
+            if self.verbose:
+                if (i+1)%(int(self.iterations/10)) == 0:
+                    print('Monte Carlo calculating...{num}%'.format(num=100*(i+1)/self.iterations))
+
+            energy = -np.sum(np.sum(deltaE))/2
+
+        return energy,state
 
     def init(self,parallel=0):
         '''
         Calculate ground state
         '''
-        energies = list()
+        datas = list()
+        states = list()
+        
+        for i in range(self.populations):
+            states.append(np.random.choice([-1,1],size=self.size))
+        
         if parallel:
             print('Compuation in parallel with core: {num}'.format(num=parallel))
-            pool = Pool(4)  
-            energies = pool.map(self.montecarlo,self.states) 
+            pool = Pool(parallel)  
+            datas = pool.map(self.montecarlo,states) 
             pool.close()
             pool.join()
         else:
             count = 1
-            for state in self.states:
-                energies.append(self.montecarlo(state))
+            for state in states:
+                datas.append(self.montecarlo(state))
                 if self.verbose:
                     print('Series: {count}th finished!'.format(count=count))
                 count += 1
                     
+        energies = [data[0] for data in datas]
+        states = [data[1] for data in datas]
+
         index = np.argmin(energies)
         self.groundenergy = energies[index]
-        self.groundstate = self.states[index]
+        self.groundstate = states[index]
         return True
 
     def getgroundstate(self):
@@ -104,8 +106,8 @@ class Isingmodel:
 
 
 if __name__=='__main__':
-    ising = Isingmodel((4,4),1.0,0.3,verbose=True,populations=20)
-    ising.init(parallel=4)
+    ising = Isingmodel((100,100),1.0,1,verbose=True,populations=1)
+    ising.init(parallel=0)
     import matplotlib.pyplot as plt 
     groundstate = ising.getgroundstate()
     groundenergy = ising.getgroundenergy()
