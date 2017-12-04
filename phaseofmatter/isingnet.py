@@ -5,7 +5,7 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras.models import load_model
 
 class PhaseDetector:
-    def __init__(self,input_shape,num_classes):
+    def __init__(self):
         self.model = Sequential()
         
     def init(self,input_shape,num_classes):
@@ -35,14 +35,13 @@ class PhaseDetector:
             metrics=['accuracy']
         )
 
-    def fit(self,x_train,y_train,batch_size,epochs,validation_data,verbose=0):
+    def fit(self,x_train,y_train,batch_size=16,epochs=100,verbose=0):
         self.model.fit(
             x_train,
             y_train,
             batch_size=batch_size,
             epochs=epochs,
-            verbose=verbose,
-            validation_data=validation_data
+            verbose=verbose
         )
 
     def evaluate(self,x_test,y_test):
