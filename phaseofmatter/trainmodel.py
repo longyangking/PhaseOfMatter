@@ -15,11 +15,11 @@ def calmodel(model):
 if __name__ == "__main__":
     print("Start to prepare data...")
 
-    N = 3000
+    N = 10000
     n_train = int(N*0.8)
     n_test = N - n_train
 
-    cores = 16
+    cores = 24  # 24 CPU cores used to calculate Ising model
     isings = list()
     Nx,Ny = 50,50
     size = (Nx,Ny)
@@ -57,7 +57,7 @@ if __name__ == "__main__":
 
     print("Training model with state shape: [{0}]".format(state_shape))
     mlmodel = MLModel(state_shape=state_shape, verbose=1)
-    mlmodel.fit(Xs_train, ys_train, epochs=10, batch_size=32)
+    mlmodel.fit(Xs_train, ys_train, epochs=100, batch_size=32)
     filename = 'model.h5'
     print("Saving model with file name [{0}]".format(filename))
     mlmodel.save_model(filename)
@@ -68,7 +68,10 @@ if __name__ == "__main__":
     print("Loss : [{0:.4f}]; Acc : [{1:.2f}%]".format(loss, acc*100))
 
     plt.figure()
-    plt.scatter(range(N), values)
+    plt.scatter(range(N), values, label="Ground Truth")
     values_pred = mlmodel.predict(groundstates)
-    plt.plot(range(N), values_pred, c='r')
+    plt.plot(range(N), values_pred, c='r',label="Predicted by ML")
+    plt.xlabel("Sample index")
+    plt.ylabel("Value")
+    plt.legend()
     plt.show()

@@ -6,11 +6,19 @@
 
 ![](./pics/Ising.png)
 
-+ Neural Networks (Coming)
++ Convolutional Neural Networks
+
+![](./pics/mlising.png)
 
 ## Requirements
 + Numpy, Matplotlib
-+ Keras, Tensorflow(backend)
++ Keras, Tensorflow
+
+## How to use
++ Train and test model for detecting phase of matter
+
+        cd phaseofmatter
+        python trainmodel.py
 
 ## References
 [1]Carrasquilla J, Melko R G. Machine learning phases of matter[J]. Nature Physics, 2017.  
