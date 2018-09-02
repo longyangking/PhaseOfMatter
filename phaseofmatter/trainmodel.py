@@ -72,6 +72,6 @@ if __name__ == "__main__":
     values_pred = mlmodel.predict(groundstates)
     plt.plot(range(N), values_pred, c='r',label="Predicted by ML")
     plt.xlabel("Sample index")
-    plt.ylabel("Value")
+    plt.ylabel("Phase Transition")
     plt.legend()
     plt.show()
