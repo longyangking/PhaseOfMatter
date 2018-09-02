@@ -95,22 +95,14 @@ class Isingmodel:
         self.groundstate = states[index]
         return True
 
-    def getgroundstate(self):
-        return self.groundstate
+    def get_beta(self):
+        return self.beta
 
-    def getgroundenergy(self):
+    def get_J(self):
+        return self.J
+
+    def get_groundstate(self):
+        return np.copy(self.groundstate)
+
+    def get_groundenergy(self):
         return self.groundenergy
-
-    def getgroundstate(self):
-        return self.groundstate
-
-
-if __name__=='__main__':
-    ising = Isingmodel((100,100),1.0,1,verbose=True,populations=1)
-    ising.init(parallel=0)
-    import matplotlib.pyplot as plt 
-    groundstate = ising.getgroundstate()
-    groundenergy = ising.getgroundenergy()
-    print('Ground Energy: {num}'.format(num=groundenergy))
-    plt.imshow(groundstate)
-    plt.show()

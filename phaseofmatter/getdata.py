@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 def initmodel(model):
     model.init()
-    groundenergy = model.getgroundenergy()
+    groundenergy = model.get_groundenergy()
     print('Ground energy: {num}'.format(num=groundenergy))
     return model.getgroundstate()
 
