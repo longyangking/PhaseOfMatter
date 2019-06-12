@@ -21,4 +21,9 @@ class Kitaevchain:
             if (state[nexti] != 0):
 
     def montecarlo(self):
+
+
+    def get_groundstate(self):
+
+    def get_groundenergy(self):
         
